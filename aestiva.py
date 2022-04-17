@@ -2,6 +2,7 @@ import serial
 import serial.tools.list_ports as stlp
 import time
 import datetime
+import redcap as rc
 
 ser = None
 def open_serial():
@@ -112,6 +113,18 @@ while(True):
             meanPres = convert_int(theRes, 24, 27)
             print("Measured Mean Pressure:", meanPres)
 
+            minPres = convert_int(theRes, 27, 30)
+            print("Measured Min Pressure:", minPres)
+
+            #Check to see if this new message was a new breath
+            indByte = theRes[30:31]
+            if(indByte == '\x40'):
+                indByte = True
+            elif(indByte == '\x00'):
+                indByte = False
+            else:
+                indByte = False
+                
             if(sendDict["datetime"] == None):
                 sendDict["datetime"] = cur_time_string()
             sendDict["measured"] = {}
@@ -122,7 +135,7 @@ while(True):
             sendDict["measured"]["meas_max_pres"] = maxPres
             sendDict["measured"]["meas_insp_plat"] = inspPlat
             sendDict["measured"]["meas_mean_pres"] = meanPres
-
+            sendDict["measured"]["meas_min_pres"] = minPres
         elif(theRes.startswith(":VTQ")):
             tv = convert_int(theRes, 4, 8)
             print("Set Tidal Volume:", tv)
