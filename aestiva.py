@@ -57,7 +57,7 @@ def read_resp():
                 print("read_resp, ERROR:", err)
                 close_serial()
 
-            #If it has been greater than 30 seconds since last serial read
+            #If it has been greater than 20 seconds since last serial read
             if(last_ser_read != None and 
                ((datetime.datetime.now() - last_ser_read).total_seconds() > 20)):
                 close_serial()
@@ -214,6 +214,7 @@ while(True):
                 ventMode = None
             print("Set Vent Mode:", ventMode)
 
+            #This is for parsing the last 12 bytes for status
             #print(len(theRes))
             #print(theRes[45:58])
             #print(theRes[45:58].encode("utf-8"))
@@ -228,12 +229,14 @@ while(True):
             sendDict["set"]["set_insp_pres"] = inspPres
             sendDict["set"]["set_vent_mode"] = ventMode
 
+        #See if the to send dict is full
         if(sendDict["datetime"] != None and
                 sendDict["measured"] != None and 
                 sendDict["set"] != None):
 
             if(sendDict["measured_ind_byte"]):
-                toSend = {}
+                #Flatten the dict for sending results
+                toSend = {"datetime": sendDict["datetime"]}
                 for x in sendDict["set"]:
                     toSend[x] = sendDict["set"][x]
                 for y in sendDict["measured"]:
@@ -241,5 +244,6 @@ while(True):
                 rcres = rc.post_redcap(toSend)
                 print("Send Record:", rcres)
 
+            #Set the dict to default empty
             default_send_dict()
 
