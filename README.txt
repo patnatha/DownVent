@@ -3,7 +3,7 @@ This is the home directory for the serial COM/USB based logger for the Datex-Ohm
 
 In the home directory there must be a token.auth file with the redcap connection details which include the first line is the "OR" string. Second line is the renpoint (HTTPS://...), and the third line is the REDCap API token which must be kept a secret.
 
-RedCap Instrument Structure (CSV)
+#RedCap Instrument Structure (CSV)
 "Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
 record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
 or,form_1,,text,or,,"Which operating room",,,,,,,,,,,
