@@ -28,7 +28,9 @@ def search_coms():
     try:
         the_port = None
         for port in stlp.comports():
-            if("USB-Serial" in port.description):
+            print(port.description)
+            if("USB-Serial" in port.description or #BENEFEI USB-to-Serial 
+               "Chipi-X" in port.description):     #CHIP
                 the_port = port.device
         return(the_port)
     except Exception as err:
