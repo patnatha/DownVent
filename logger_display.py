@@ -93,6 +93,7 @@ while True:
                         lcd.set_backlight_red()
                     else:
                         lcd.set_backlight_green()
+                    last_check_datetime = cur_time
 
                 lcd.set_cursor_home()
                 theMsg = (" " + cur_time.strftime("%H:%M %m/%d/%y") + " ")
