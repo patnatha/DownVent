@@ -53,7 +53,7 @@ def query_count(token):
         'exportSurveyFields': 'false',
         'exportDataAccessGroups': 'false',
         'returnFormat': 'json',
-        'filterLogic': 'or == "' + which_or + '"',
+        'filterLogic': '[or] = "' + which_or + '"',
         'dateRangeBegin': datetime.now().strftime("%Y-%m-%d") + " 00:00:00",
         'dateRangeEnd': datetime.now().strftime("%Y-%m-%d") + " 23:59:59"
         }
@@ -80,7 +80,7 @@ while True:
             lcd.display_on()
             lcd.set_lcd_size(16,2)
             lcd.set_brightness(255)
-            lcd.set_contrast(225)
+            lcd.set_contrast(200)
             lcd.set_autoscroll(False)
             lcd.set_backlight_red()
 
