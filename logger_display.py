@@ -33,7 +33,24 @@ def load_tokens():
 load_tokens()
 
 def query_count(token):
-    
+    data = {
+        'token': token,
+        'content': 'record',
+        'action': 'export',
+        'format': 'json',
+        'type': 'flat',
+        'csvDelimiter': '',
+        'fields[0]': 'record_id',
+        'rawOrLabel': 'raw',
+        'rawOrLabelHeaders': 'raw',
+        'exportCheckboxLabel': 'false',
+        'exportSurveyFields': 'false',
+        'exportDataAccessGroups': 'false',
+        'returnFormat': 'json',
+        'dateRangeBegin': datetime.now().strftime("%Y-%m-%d") + " 00:00:00",
+        'dateRangeEnd': datetime.now().strftime("%Y-%m-%d") " 23:59:59"
+    }
+    r = requests.post('https://redcap.wakehealth.edu/redcap/api/',data=data)
  
 while True:
     device_port = find_port()
