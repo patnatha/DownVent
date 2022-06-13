@@ -5,6 +5,11 @@ import time
 from datetime import datetime
 import os
 import requests
+import json
+
+last_check_datetime = None
+last_anes_cnt = None
+last_vent_cnt = None
 
 def find_port():
     for port in list_ports.comports():
@@ -21,7 +26,7 @@ def load_tokens():
     theFile = os.path.join(os.path.dirname(__file__), "display.auth")
     f = open(theFile)
     for line in f:
-        split_it = line.strip("\n").split(":")
+        line = line.strip("\n").split(":")
         if(line[0] == "rc_url"):
             rc_url = line[1] + ":" + line[2]
         elif(line[0] == "or"):
@@ -33,7 +38,8 @@ def load_tokens():
 load_tokens()
 
 def query_count(token):
-    data = {
+    try:
+        data = {
         'token': token,
         'content': 'record',
         'action': 'export',
@@ -47,11 +53,23 @@ def query_count(token):
         'exportSurveyFields': 'false',
         'exportDataAccessGroups': 'false',
         'returnFormat': 'json',
+        'filterLogic': 'or == "' + which_or + '"',
         'dateRangeBegin': datetime.now().strftime("%Y-%m-%d") + " 00:00:00",
-        'dateRangeEnd': datetime.now().strftime("%Y-%m-%d") " 23:59:59"
-    }
-    r = requests.post('https://redcap.wakehealth.edu/redcap/api/',data=data)
- 
+        'dateRangeEnd': datetime.now().strftime("%Y-%m-%d") + " 23:59:59"
+        }
+        r = requests.post(rc_url,data=data)
+        if(r.status_code == 200):
+            return(len(r.json()))
+        else:
+            return(-1)
+    except Exception as err:
+        print("query_count ERROR:", err)
+        return(-2)
+
+last_anes_cnt = query_count(anes_token)
+last_vent_cnt = query_count(vent_token)
+last_check_datetime = datetime.now()
+
 while True:
     device_port = find_port()
     if(device_port != None):
@@ -66,12 +84,28 @@ while True:
             lcd.set_autoscroll(False)
             lcd.set_backlight_red()
 
-            lcd.set_cursor_home()
-            theMsg = (" " + datetime.now().strftime("%H:%M %m/%d/%y") + " ")
-            theMsg += ("V:0000 - A:0000") 
-            lcd.write(theMsg)
+            while True:
+                cur_time = datetime.now()
+                if((cur_time - last_check_datetime).seconds > 60):
+                    last_vent_cnt = query_count(vent_token)
+                    last_anes_cnt = query_count(anes_token)
+                    if(last_vent_cnt == 0 or last_anes_cnt == 0):
+                        lcd.set_backlight_red()
+                    else:
+                        lcd.set_backlight_green()
+
+                lcd.set_cursor_home()
+                theMsg = (" " + cur_time.strftime("%H:%M %m/%d/%y") + " ")
+                theMsg += "V:"
+                theMsg += str(last_vent_cnt).zfill(4)
+                theMsg += " - " 
+                theMsg += "A:" 
+                theMsg += str(last_anes_cnt).zfill(4)
+                lcd.write(theMsg)
+                time.sleep(5)
+
             lcd.disconnect()
         except Exception as err:
             print(err)
 
-    time.sleep(5)
+    time.sleep(60)
