@@ -12,9 +12,13 @@ last_anes_cnt = None
 last_vent_cnt = None
 
 def find_port():
-    for port in list_ports.comports():
-        if(port.description == "Adafruit Industries"):
-            return(port.device)
+    try:
+        for port in list_ports.comports():
+            if(port.description == "Adafruit Industries"):
+                return(port.device)
+    except Exception as err:
+        print("find_port ERROR:", err)
+
     return(None)
 
 anes_token = None
