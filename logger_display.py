@@ -80,36 +80,37 @@ while True:
         try:
             lcd = LcdBackpack(device_port, 9600)
             lcd.connect()
-            lcd.clear()
-            lcd.display_on()
-            lcd.set_lcd_size(16,2)
-            lcd.set_brightness(255)
-            lcd.set_contrast(200)
-            lcd.set_autoscroll(False)
-            lcd.set_backlight_red()
+            if(lcd.connected):
+                lcd.clear()
+                lcd.display_on()
+                lcd.set_lcd_size(16,2)
+                lcd.set_brightness(255)
+                lcd.set_contrast(200)
+                lcd.set_autoscroll(False)
+                lcd.set_backlight_red()
 
-            while True:
-                cur_time = datetime.now()
-                if((cur_time - last_check_datetime).seconds > 60):
-                    last_vent_cnt = query_count(vent_token)
-                    last_anes_cnt = query_count(anes_token)
-                    if(last_vent_cnt == 0 or last_anes_cnt == 0):
-                        lcd.set_backlight_red()
-                    else:
-                        lcd.set_backlight_green()
-                    last_check_datetime = cur_time
+                while lcd.connected:
+                    cur_time = datetime.now()
+                    if((cur_time - last_check_datetime).seconds > 60):
+                        last_vent_cnt = query_count(vent_token)
+                        last_anes_cnt = query_count(anes_token)
+                        if(last_vent_cnt == 0 or last_anes_cnt == 0):
+                            lcd.set_backlight_red()
+                        else:
+                            lcd.set_backlight_green()
+                        last_check_datetime = cur_time
 
-                lcd.set_cursor_home()
-                theMsg = (" " + cur_time.strftime("%H:%M %m/%d/%y") + " ")
-                theMsg += "V:"
-                theMsg += str(last_vent_cnt).zfill(4)
-                theMsg += " - " 
-                theMsg += "A:" 
-                theMsg += str(last_anes_cnt).zfill(4)
-                lcd.write(theMsg)
-                time.sleep(5)
+                    lcd.set_cursor_home()
+                    theMsg = (" " + cur_time.strftime("%H:%M %m/%d/%y") + " ")
+                    theMsg += "V:"
+                    theMsg += str(last_vent_cnt).zfill(4)
+                    theMsg += " - " 
+                    theMsg += "A:" 
+                    theMsg += str(last_anes_cnt).zfill(4)
+                    lcd.write(theMsg)
+                    time.sleep(5)
 
-            lcd.disconnect()
+                lcd.disconnect()
         except Exception as err:
             print(err)
 
